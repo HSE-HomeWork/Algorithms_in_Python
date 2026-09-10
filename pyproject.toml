@@ -1,0 +1,45 @@
+[project]
+name = "Algorithms_Homeworks"
+version = "1.0.0"
+description = "Тут будут все библиотеки, настройки и прочее для домашек"
+requires-python = ">=3.13"
+
+[dependency-groups]
+dev = [
+    "hypothesis>=6.168.0",
+    "mypy>=2.3.1",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.16.7",
+    "wemake-python-styleguide>=1.8.0",
+]
+
+[tool.ruff]
+line-length = 65
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "D203",
+    "D213",
+    "COM812",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = [
+    "S101",
+    "INP001",
+]
+
+[tool.pytest]
+testpaths = ["tests"]
+addopts = [
+    "--strict-markers",
+    "--import-mode=importlib",
+]
+
+[tool.coverage.run]
+source = ["."]
+omit = [
+    "tests/*",
+]
