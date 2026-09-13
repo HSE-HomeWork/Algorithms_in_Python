@@ -34,6 +34,7 @@ ignore = [
 
 [tool.pytest]
 testpaths = ["tests"]
+pythonpath = ["."]
 addopts = [
     "--strict-markers",
     "--import-mode=importlib",
@@ -41,6 +42,7 @@ addopts = [
 
 [tool.mypy]
 strict = true
+mypy_path = "."
 
 [tool.coverage.run]
 source = ["."]
