@@ -43,5 +43,5 @@ def count_primes_naive(limit: int) -> int:
 
 @given(st.integers(min_value=0, max_value=MAX_N))
 def test_matches_naive(number: int) -> None:
-    """Совпадает с перебором делителей."""
+    """Совпадает при переборе делителей."""
     assert eratosthen_sieve(number) == count_primes_naive(number)
