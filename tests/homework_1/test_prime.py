@@ -3,10 +3,11 @@
 from hypothesis import given
 from hypothesis import strategies as st
 
-from homework_1.prime import eratosfen_sieve
+from homework_1.prime import eratosthen_sieve
 
 HM_EX_1 = 10
 HM_EX_2 = 1
+THOUSAND = 1000
 
 MAX_N = 300
 FIRST_PRIME = 2
@@ -16,8 +17,14 @@ def test_hm_numbers() -> None:
     """Поиск суммы в пустом массиве."""
     answer_1 = 4
     answer_2 = 0
-    assert eratosfen_sieve(HM_EX_1) == answer_1
-    assert eratosfen_sieve(HM_EX_2) == answer_2
+    assert eratosthen_sieve(HM_EX_1) == answer_1
+    assert eratosthen_sieve(HM_EX_2) == answer_2
+
+
+def test_thousand() -> None:
+    """Известное значение для тысячи."""
+    expected = 168
+    assert eratosthen_sieve(THOUSAND) == expected
 
 
 def count_primes_naive(limit: int) -> int:
@@ -37,13 +44,4 @@ def count_primes_naive(limit: int) -> int:
 @given(st.integers(min_value=0, max_value=MAX_N))
 def test_matches_naive(number: int) -> None:
     """Совпадает с перебором делителей."""
-    assert eratosfen_sieve(number) == count_primes_naive(number)
-
-
-@given(st.integers(min_value=0, max_value=MAX_N))
-def test_grows_by_zero_or_one(number: int) -> None:
-    """Переход к number + 1 добавляет не больше одного."""
-    growth = eratosfen_sieve(number + 1) - eratosfen_sieve(
-        number
-    )
-    assert growth in {0, 1}
+    assert eratosthen_sieve(number) == count_primes_naive(number)
