@@ -18,7 +18,7 @@ POSITIVE_LISTS: SearchStrategy[list[int]] = st.lists(
 
 
 def test_hm_array() -> None:
-    """Поиск суммы в пустом массиве."""
+    """Поиск суммы в массиве из примера."""
     answer = 36
     assert max_even_sum_array(HOMEWORK_AR) == answer
 
