@@ -5,8 +5,8 @@ from hypothesis import strategies as st
 
 from homework_1.prime import eratosthen_sieve
 
-HM_EX_1 = 10
-HM_EX_2 = 1
+HM_EX1 = 10
+HM_EX2 = 1
 THOUSAND = 1000
 
 MAX_N = 300
@@ -15,10 +15,10 @@ FIRST_PRIME = 2
 
 def test_hm_numbers() -> None:
     """Поиск суммы в пустом массиве."""
-    answer_1 = 4
-    answer_2 = 0
-    assert eratosthen_sieve(HM_EX_1) == answer_1
-    assert eratosthen_sieve(HM_EX_2) == answer_2
+    answer1 = 4
+    answer2 = 0
+    assert eratosthen_sieve(HM_EX1) == answer1
+    assert eratosthen_sieve(HM_EX2) == answer2
 
 
 def test_thousand() -> None:
