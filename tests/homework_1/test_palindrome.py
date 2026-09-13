@@ -35,4 +35,5 @@ def test_bad_case() -> None:
 def test_matches_string_reversal(number: int) -> None:
     """Генеративный тест, проверка через строку."""
     digits = str(number)
-    assert is_palindrome(number) == (digits == digits[::-1])
+    reversed_digits = "".join(reversed(digits))
+    assert is_palindrome(number) == (digits == reversed_digits)
