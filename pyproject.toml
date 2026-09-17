@@ -3,6 +3,7 @@ name = "Algorithms_Homeworks"
 version = "1.0.0"
 description = "Тут будут все библиотеки, настройки и прочее для домашек"
 requires-python = ">=3.13"
+dependencies = []
 
 [dependency-groups]
 dev = [
