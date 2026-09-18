@@ -23,8 +23,7 @@ class Queue:
             self.tail = new_tail
         elif self.top is None:
             self.top = ListNode(value)
-            self.tail = ListNode(value)
-            self.top.next = self.tail
+            self.tail = self.top
 
     def silent_dequeue(self) -> None:
         """Забрать из начала не вернув."""
@@ -36,17 +35,21 @@ class Queue:
     def dequeue(self) -> Any:
         """Забрать из начала вернув."""
         if self.top is not None:
-            new_top = self.top.next
-            if new_top is None:
+            old = self.top.val
+            self.top = self.top.next
+            if self.top is None:
                 self.tail = None
-                return None
-            value = self.top.val
-            self.top = new_top
-            return value
+            return old
         return None
 
     def peek(self) -> Any:
         """Посмотреть первый элемент."""
+        if self.top is not None:
+            return self.top.val
+        return None
+
+    def reverse_peek(self) -> Any:
+        """Посмотреть последний элемент."""
         if self.tail is not None:
             return self.tail.val
         return None
