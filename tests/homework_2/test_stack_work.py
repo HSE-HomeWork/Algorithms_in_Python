@@ -57,7 +57,7 @@ def test_up_of_stack(
     pushed: list[Any],
     waiting: list[Any],
 ) -> None:
-    """На верху то, что нужно."""
+    """Сверху то, что нужно."""
     for value in pushed:
         our_stack.push(value)
     assert our_stack.peek() == waiting

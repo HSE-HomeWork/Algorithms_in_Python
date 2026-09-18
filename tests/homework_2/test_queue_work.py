@@ -63,7 +63,7 @@ def test_manipulate_queue(queue: Queue) -> None:
 def test_my_with_collections(
     queue: Queue, case: list[Any]
 ) -> None:
-    """В сравнении с collections."""
+    """Сравнение относительно встроенной collections."""
     standart: deque[Any] = deque()
 
     def fill() -> None:
