@@ -68,12 +68,50 @@
 
 ```mermaid
 graph LR
-    top([top]) --> n1["val: 1"]
-    n1 -->|next| n2["val: 2"]
-    n2 -->|next| n3["val: 3"]
+    top([top]) --> null1(["None"])
+    tail([tail]) --> null2(["None"])
+
+    style top fill:#E6F1FB,stroke:#185FA5
+    style tail fill:#E6F1FB,stroke:#185FA5
+    style null1 fill:#F1EFE8,stroke:#888780
+    style null2 fill:#F1EFE8,stroke:#888780
+```
+
+```mermaid
+graph LR
+    top([top]) --> n1["1"]
+    tail([tail]) --> n1
+    n1 -->|next| null(["None"])
+
+    style top fill:#E6F1FB,stroke:#185FA5
+    style tail fill:#E6F1FB,stroke:#185FA5
+    style n1 fill:#E1F5EE,stroke:#0F6E56
+    style null fill:#F1EFE8,stroke:#888780
+```
+
+```mermaid
+graph LR
+    top([top]) --> n1["1"]
+    n1 -->|next| n2["2"]
+    n2 -->|next| n3["3"]
     n3 -->|next| null(["None"])
     tail([tail]) --> n3
 
+    style top fill:#E6F1FB,stroke:#185FA5
+    style tail fill:#E6F1FB,stroke:#185FA5
+    style n3 fill:#E1F5EE,stroke:#0F6E56
+    style null fill:#F1EFE8,stroke:#888780
+```
+
+```mermaid
+graph LR
+    n1["1"]:::dead -.->|отброшен| n2
+    top([top]) --> n2["2"]
+    n2 -->|next| n3["3"]
+    n3 -->|next| null(["None"])
+    tail([tail]) --> n3
+
+    classDef dead fill:#FCEBEB,stroke:#A32D2D,color:#501313
     style top fill:#E6F1FB,stroke:#185FA5
     style tail fill:#E6F1FB,stroke:#185FA5
     style null fill:#F1EFE8,stroke:#888780
