@@ -16,12 +16,8 @@ class Stack:
         """Положить элемент."""
         if self.head is not None:
             new_head = ListNode(value)
-            original_head = self.head
-
+            new_head.next = self.head
             self.head = new_head
-            self.head.next = original_head
-        else:
-            self.head = ListNode(value)
 
     def pop(self) -> None:
         """Снять верхний элемент."""
