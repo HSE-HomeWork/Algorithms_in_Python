@@ -60,8 +60,9 @@
     silent_dequeue() - O(1) без дополнительной памяти
     peek()           - O(1) тут тоже пусто
     reverse_peek()   - O(1) и здесь нет
-    array_perform    - O(n) [память есть](https://www.youtube.com/watch?v=OPxhAFZFuLg), список из всех элементов
 ```
+
+У array_perform как и у стек - O(n) [память есть](https://www.youtube.com/watch?v=OPxhAFZFuLg), список из всех элементов.
 
 ## Визуализация очереди
 
