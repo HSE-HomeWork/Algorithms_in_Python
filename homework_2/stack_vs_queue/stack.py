@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from .node import ListNode
+from homework_2.stack_vs_queue.node import ListNode
 
 
 class Stack:

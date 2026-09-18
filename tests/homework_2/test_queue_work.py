@@ -66,16 +66,15 @@ def test_my_with_collections(
     """Сравнение относительно встроенной collections."""
     standart: deque[Any] = deque()
 
-    def fill() -> None:
-        for c in case:
-            queue.enqueue(c)
-            standart.append(c)
-
-    fill()
+    for some in case:
+        queue.enqueue(some)
+        standart.append(some)
     for _ in case:
         queue.silent_dequeue()
         standart.popleft()
-    fill()
+    for some in case:
+        queue.enqueue(some)
+        standart.append(some)
 
     first_el_collection = standart.popleft()
     first_my_queue = queue.dequeue()

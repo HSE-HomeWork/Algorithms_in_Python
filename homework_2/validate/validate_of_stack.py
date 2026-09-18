@@ -9,8 +9,8 @@ def handle_arrays(pushed: list[int], popped: list[int]) -> bool:
     point_pop = 0
     our_stack = Stack(start_head=None)
 
-    for i in range(length):
-        our_stack.push(pushed[i])
+    for index in range(length):
+        our_stack.push(pushed[index])
         while (
             point_pop < length
             and our_stack.peek() == popped[point_pop]
