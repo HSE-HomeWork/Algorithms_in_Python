@@ -24,3 +24,12 @@ class ListNode:
             start.next = ListNode(value=element)
             start = start.next
         return linked_list.next
+
+    @classmethod
+    def to_list(cls, node: ListNode) -> list[Any]:
+        """Из LinkedList в список."""
+        answer = []
+        while node:
+            answer.append(node.val)
+            node = node.next
+        return answer
