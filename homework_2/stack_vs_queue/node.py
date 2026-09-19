@@ -26,10 +26,11 @@ class ListNode:
         return linked_list.next
 
     @classmethod
-    def to_list(cls, node: ListNode) -> list[Any]:
+    def to_list(cls, node: ListNode | None) -> list[Any]:
         """Из LinkedList в список."""
         answer = []
-        while node:
-            answer.append(node.val)
-            node = node.next
+        curr = node
+        while curr:
+            answer.append(curr.val)
+            curr = curr.next
         return answer
