@@ -11,8 +11,9 @@ class ListNode:
         self.val = value
         self.next: ListNode | None = None
 
+    @classmethod
     def make_linked_list(
-        self, massive: list[Any]
+        cls, massive: list[Any]
     ) -> "ListNode" | None:  # noqa: TC010
         """Создание LinkedList из списка."""
         start = ListNode(value=None)
