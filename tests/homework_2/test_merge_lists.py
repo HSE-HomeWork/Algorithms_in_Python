@@ -1,4 +1,4 @@
-"""Тестирование Merge с фиктивным элементом."""
+"""Тестирование Merge_Lists."""
 
 import pytest
 from hypothesis import given
@@ -80,7 +80,7 @@ def test_merge_matches_sorted(
     second: list[int],
     algorithm: StrategyOfMerging,
 ) -> None:
-    """Слияние совпадает с sorted от объединения."""
+    """Сгенерированные+sorted == мои алгоритмы."""
     head = merge_linked_lists(first, second, algorithm)
 
     assert ListNode.to_list(head) == sorted(first + second)
