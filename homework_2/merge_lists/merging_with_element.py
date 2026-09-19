@@ -10,7 +10,7 @@ class MergeWithFictitious(StrategyOfMerging):
     def merging_algorythm(
         self, list1: list[int], list2: list[int]
     ) -> ListNode | None:
-        """Алгоритм с фиктивным элементом."""
+        """Алгоритм, в котором фиктивный элемент."""
         first, second = self.preproc_of_two_lists(list1, list2)
 
         empty = ListNode(value=None)
