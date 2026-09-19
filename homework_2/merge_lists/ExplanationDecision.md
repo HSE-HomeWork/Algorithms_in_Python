@@ -63,7 +63,7 @@ O(1) - дополнительной, не считая узлов из preproc, 
 
 ```mermaid
 graph LR
-    D(["dummy<br/>val: None"]) -->|"шаг 1"| N1["1<br/>из first"]
+    D(["empty<br/>val: None"]) -->|"шаг 1"| N1["1<br/>из first"]
     N1 -->|"шаг 2"| N2["2<br/>из second"]
     N2 -->|"шаг 3"| N3["3<br/>из first"]
     N3 -.->|"остаток, O(1)"| N4["4<br/>из second"]
