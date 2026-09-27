@@ -77,7 +77,7 @@ class MyDict:
             self._probe(key)
         except KeyInfoError:
             return False
-        return False
+        return True
 
     def pop(self, key: Any) -> Any:
         """Удаление элемента."""
