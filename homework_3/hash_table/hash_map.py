@@ -23,17 +23,11 @@ class KeyInfoError(KeyError):
 class MyDict:
     """Сам класс."""
 
-    _TOMBSTONE = object()
-    _LOAD_FACTOR = 0.66
-    _STANDART_CAPACITY = 16
-
-    def __init__(
-        self, capacity: int = _STANDART_CAPACITY
-    ) -> None:
+    def __init__(self, capacity: int = MIN_CAPACITY) -> None:
         """Инициализация мапки."""
         self.del_elements = 0
         self.size = 0
-        self.load_factor = self._LOAD_FACTOR
+        self.load_factor = LOAD_FACTOR
         self.capacity = self.capacity_check(value=capacity)
         self.arr: list[Any] = [
             [None] for _ in range(self.capacity)
@@ -76,21 +70,20 @@ class MyDict:
     def __iter__(self) -> Iterator[Any]:
         """Итерация по моей мапе."""
         for item in self.arr:
-            if item is not self._TOMBSTONE and len(item) > 1:
+            if item is not TOMBSTONE and len(item) > 1:
                 yield item[0]
 
     def pop(self, key: Any) -> Any:
         """Удаление элемента."""
         index = self._probe(key)
         value = self.arr[index][1]
-        self.arr[index] = self._TOMBSTONE
+        self.arr[index] = TOMBSTONE
         self.del_elements += 1
         self.size -= 1
-        unload_factor = self.load_factor / 2.5
+        unload_factor = self.load_factor / SHRINK_DIVISOR
         if (
-            (self.size / self.capacity) < unload_factor
-            and self.capacity > self._STANDART_CAPACITY
-        ):
+            self.size / self.capacity
+        ) < unload_factor and self.capacity > MIN_CAPACITY:
             new_capacity = self.capacity // 2
             self._resize(new_capacity=new_capacity)
         return value
@@ -98,13 +91,13 @@ class MyDict:
     def values(self) -> Iterator[Any]:
         """Возвращает значения."""
         for item in self.arr:
-            if item is not self._TOMBSTONE and len(item) > 1:
+            if item is not TOMBSTONE and len(item) > 1:
                 yield item[1]
 
     @classmethod
     def capacity_check(cls, value: int) -> int:
         """Проверяет ёмкость и округляет до 2^k."""
-        if value < cls._STANDART_CAPACITY:
+        if value < MIN_CAPACITY:
             error_info = "Capacity слишком мал"
             raise ValueError(error_info)
         return 1 << _find_degree(cap=value)
@@ -125,10 +118,10 @@ class MyDict:
         """Положить в надгробие или в None."""
         for index in self._probe_sequence(key, self.capacity):
             slot = self.arr[index]
-            if slot is self._TOMBSTONE or len(slot) == 1:
+            if slot is TOMBSTONE or len(slot) == 1:
                 self.arr[index] = [key, value]
                 self.size += 1
-                if slot is self._TOMBSTONE:
+                if slot is TOMBSTONE:
                     self.del_elements -= 1
                 break
 
@@ -139,7 +132,7 @@ class MyDict:
         """
         for index in self._probe_sequence(key, self.capacity):
             slot = self.arr[index]
-            if slot is self._TOMBSTONE:
+            if slot is TOMBSTONE:
                 continue
             if len(slot) == 1:
                 raise KeyInfoError(key)
@@ -154,7 +147,7 @@ class MyDict:
         ]
         for idx in range(len(self.arr)):
             item = self.arr[idx]
-            if item is not self._TOMBSTONE and len(item) > 1:
+            if item is not TOMBSTONE and len(item) > 1:
                 self._place(new_arr, item, new_capacity)
         self.arr = new_arr
         self.capacity = new_capacity
