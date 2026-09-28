@@ -1,4 +1,4 @@
-"""Тесты для поиска пары индексов с суммой k."""
+"""Тесты для поиска пары индексов суммой k."""
 
 import pytest
 from hypothesis import given, settings
