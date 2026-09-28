@@ -71,9 +71,10 @@ def test_equal_keys_of_different_types() -> None:
 
 
 def test_many_same_hash_keys() -> None:
-    """300 ключей с одним хэшем: удаления и повторные вставки."""
-    chain = [7 + shift * HASH_MODULUS for shift in range(300)]
+    """300 ключей, там один хэш."""
+    chain = [7 + m * HASH_MODULUS for m in range(300)]
     table = MyDict()
+    full_length = 300
 
     for key in chain:
         table[key] = key
@@ -82,6 +83,8 @@ def test_many_same_hash_keys() -> None:
     for key in chain[::2]:
         table[key] = -key
 
-    assert len(table) == 300
-    assert all(table[number] == -number for number in chain[::2])
-    assert all(table[number] == number for number in chain[1::2])
+    assert len(table) == full_length
+    expected = {key: key for key in chain}
+    expected.update({key: -key for key in chain[::2]})
+    for key, value in expected.items():
+        assert table[key] == value

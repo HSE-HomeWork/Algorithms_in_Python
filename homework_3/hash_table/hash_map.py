@@ -133,7 +133,7 @@ class MyDict:
                     self.del_elements -= 1
                 break
 
-    def _probe(self, key: Any) -> int:
+    def _probe(self, key: Any) -> int:  # noqa: WPS231
         """Индекс ячейки,ключ или KeyInfoError.
 
         Надгробия пропускает, на пустоте останавливается.
