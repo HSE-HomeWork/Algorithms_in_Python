@@ -21,7 +21,7 @@ class KeyInfoError(KeyError):
         super().__init__(f"{something} not in hash_table")
 
 
-class MyDict:
+class MyDict:  # noqa: WPS214
     """Сам класс."""
 
     def __init__(self, capacity: int = MIN_CAPACITY) -> None:
