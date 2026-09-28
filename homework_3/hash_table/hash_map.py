@@ -3,6 +3,14 @@
 from collections.abc import Iterator
 from typing import Any
 
+TOMBSTONE = object()
+LOAD_FACTOR = 0.66
+SHRINK_DIVISOR = 2.5
+MIN_CAPACITY = 16
+WORD_BITS = 64
+MASK_64 = (1 << WORD_BITS) - 1
+FIB_MULTIPLIER = 11400714819323198485  # 2^64 / φ
+
 
 class KeyInfoError(KeyError):
     """Расширенная ошибка по ключу."""
@@ -71,6 +79,36 @@ class MyDict:
             if item is not self._TOMBSTONE and len(item) > 1:
                 yield item[0]
 
+    def pop(self, key: Any) -> Any:
+        """Удаление элемента."""
+        index = self._probe(key)
+        value = self.arr[index][1]
+        self.arr[index] = self._TOMBSTONE
+        self.del_elements += 1
+        self.size -= 1
+        unload_factor = self.load_factor / 2.5
+        if (
+            (self.size / self.capacity) < unload_factor
+            and self.capacity > self._STANDART_CAPACITY
+        ):
+            new_capacity = self.capacity // 2
+            self._resize(new_capacity=new_capacity)
+        return value
+
+    def values(self) -> Iterator[Any]:
+        """Возвращает значения."""
+        for item in self.arr:
+            if item is not self._TOMBSTONE and len(item) > 1:
+                yield item[1]
+
+    @classmethod
+    def capacity_check(cls, value: int) -> int:
+        """Проверяет ёмкость и округляет до 2^k."""
+        if value < cls._STANDART_CAPACITY:
+            error_info = "Capacity слишком мал"
+            raise ValueError(error_info)
+        return 1 << _find_degree(cap=value)
+
     def _probe_sequence(
         self, key: Any, cap: int
     ) -> Iterator[int]:
@@ -80,8 +118,8 @@ class MyDict:
         """
         h1 = hash(key)
         h2 = self._second_hash(h1, cap)
-        for i in range(cap):
-            yield (h1 + i * h2) % cap
+        for idx in range(cap):
+            yield (h1 + idx * h2) % cap
 
     def _put_in_free_slot(self, key: Any, value: Any) -> None:
         """Положить в надгробие или в None."""
@@ -114,63 +152,29 @@ class MyDict:
         new_arr: list[Any] = [
             [None] for _ in range(new_capacity)
         ]
-        for i in range(len(self.arr)):
-            item = self.arr[i]
+        for idx in range(len(self.arr)):
+            item = self.arr[idx]
             if item is not self._TOMBSTONE and len(item) > 1:
-                key = item[0]
-                value = item[1]
-                for idx in self._probe_sequence(
-                    key, new_capacity
-                ):
-                    if len(new_arr[idx]) == 1:
-                        new_arr[idx] = [key, value]
-                        break
+                self._place(new_arr, item, new_capacity)
         self.arr = new_arr
         self.capacity = new_capacity
         self.del_elements = 0
 
+    def _place(
+        self, arr: list[Any], item: list[Any], cap: int
+    ) -> None:
+        """Кладёт пару в первую пустую ячейку нового списка."""
+        for index in self._probe_sequence(item[0], cap):
+            if len(arr[index]) == 1:
+                arr[index] = item
+                return
+
     def _second_hash(self, key: int, cap: int) -> int:
         """Реализация хэширования Фибоначи."""
-        six_four_bit_architecture = (
-            11400714819323198485  # 2^64 на золотое сечение
-        )
-        _mask64 = (1 << 64) - 1
-        degree = self._find_degree(cap)
-        return ((key * six_four_bit_architecture) & _mask64) >> (
-            64 - degree
-        ) | 1
+        mixed = (key * FIB_MULTIPLIER) & MASK_64
+        return mixed >> (64 - _find_degree(cap)) | 1
 
-    def pop(self, key: Any) -> Any:
-        """Удаление элемента."""
-        index = self._probe(key)
-        value = self.arr[index][1]
-        self.arr[index] = self._TOMBSTONE
-        self.del_elements += 1
-        self.size -= 1
-        unload_factor = self.load_factor / 2.5
-        if (
-            (self.size / self.capacity) < unload_factor
-            and self.capacity > self._STANDART_CAPACITY
-        ):
-            new_capacity = self.capacity // 2
-            self._resize(new_capacity=new_capacity)
-        return value
 
-    def values(self) -> Iterator[Any]:
-        """Возвращает значения."""
-        for item in self.arr:
-            if item is not self._TOMBSTONE and len(item) > 1:
-                yield item[1]
-
-    @classmethod
-    def capacity_check(cls, value: int) -> int:
-        """Проверяет ёмкость и округляет до 2^k."""
-        if value < cls._STANDART_CAPACITY:
-            error_info = "Capacity слишком мал"
-            raise ValueError(error_info)
-        return 1 << cls._find_degree(cap=value)
-
-    @staticmethod
-    def _find_degree(cap: int) -> int:
-        """Наименьшее k, при котором 2^k >= cap."""
-        return (cap - 1).bit_length()
+def _find_degree(cap: int) -> int:
+    """Наименьшее k, при котором 2^k >= cap."""
+    return (cap - 1).bit_length()
