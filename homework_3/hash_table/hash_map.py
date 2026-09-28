@@ -32,7 +32,7 @@ class MyDict:
         ]
 
     def __getitem__(self, key: Any) -> Any:
-        """Вернуть value."""
+        """Значение по ключу или KeyInfoError."""
         index = self._probe(key)
         return self.arr[index][1]
 
@@ -45,7 +45,10 @@ class MyDict:
         return True
 
     def __setitem__(self, key: Any, value: Any) -> None:
-        """Вставить элемент."""
+        """Вставляет пару или обновляет значение.
+
+        При переполнении таблица растёт в 2 раза.
+        """
         try:
             index = self._probe(key)
         except KeyInfoError:
@@ -59,7 +62,7 @@ class MyDict:
             self._resize(new_capacity=new_capacity)
 
     def __len__(self) -> int:
-        """Возвращаем длину текущей мапы."""
+        """Количество живых пар."""
         return self.size
 
     def __iter__(self) -> Iterator[Any]:
@@ -71,7 +74,10 @@ class MyDict:
     def _probe_sequence(
         self, key: Any, cap: int
     ) -> Iterator[int]:
-        """Индексы ячеек ."""
+        """Индексы ячеек в порядке пробирования.
+
+        i-я проба: (hash(key) + i * шаг) % cap.
+        """
         h1 = hash(key)
         h2 = self._second_hash(h1, cap)
         for i in range(cap):
@@ -89,7 +95,10 @@ class MyDict:
                 break
 
     def _probe(self, key: Any) -> int:
-        """Обращение по ключу."""
+        """Индекс ячейки,ключ или KeyInfoError.
+
+        Надгробия пропускает, на пустоте останавливается.
+        """
         for index in self._probe_sequence(key, self.capacity):
             slot = self.arr[index]
             if slot is self._TOMBSTONE:
@@ -101,7 +110,7 @@ class MyDict:
         raise KeyInfoError(key)
 
     def _resize(self, new_capacity: int) -> None:
-        """Механизм реаллокации."""
+        """Перекладывает живые пары в новый список."""
         new_arr: list[Any] = [
             [None] for _ in range(new_capacity)
         ]
@@ -155,7 +164,7 @@ class MyDict:
 
     @classmethod
     def capacity_check(cls, value: int) -> int:
-        """Функция проверки вводимого capacity."""
+        """Проверяет ёмкость и округляет до 2^k."""
         if value < cls._STANDART_CAPACITY:
             error_info = "Capacity слишком мал"
             raise ValueError(error_info)
@@ -163,4 +172,5 @@ class MyDict:
 
     @staticmethod
     def _find_degree(cap: int) -> int:
+        """Наименьшее k, при котором 2^k >= cap."""
         return (cap - 1).bit_length()
