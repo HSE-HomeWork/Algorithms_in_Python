@@ -73,6 +73,13 @@ class MyDict:
             if item is not TOMBSTONE and len(item) > 1:
                 yield item[0]
 
+    def get(self, key: Any, default: Any = None) -> Any:
+        """Значение по ключу или default."""
+        try:
+            return self[key]
+        except KeyInfoError:
+            return default
+
     def pop(self, key: Any) -> Any:
         """Удаление элемента."""
         index = self._probe(key)
@@ -165,7 +172,7 @@ class MyDict:
     def _second_hash(self, key: int, cap: int) -> int:
         """Реализация хэширования Фибоначи."""
         mixed = (key * FIB_MULTIPLIER) & MASK_64
-        return mixed >> (64 - _find_degree(cap)) | 1
+        return mixed >> (WORD_BITS - _find_degree(cap)) | 1
 
 
 def _find_degree(cap: int) -> int:

@@ -9,7 +9,8 @@ def find_index_of_pair(arr: list[int], k: int) -> list[int]:
 
     for index, element in enumerate(arr):
         rev_element = k - element
-        if rev_element in dictionary:
-            return [dictionary[rev_element], index]
+        pair_index = dictionary.get(rev_element)
+        if pair_index is not None:
+            return [pair_index, index]
         dictionary[element] = index
     return []

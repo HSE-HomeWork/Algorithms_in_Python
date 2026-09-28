@@ -37,7 +37,8 @@ def test_mydict_vs_dict(
                 assert mine.pop(key) == real.pop(key)
         assert len(mine) == len(real)
 
-    assert all(mine[key] == value for key, value in real.items())
+    for key, value in real.items():
+        assert mine[key] == value
     assert len(list(mine)) == len(real)
 
 
@@ -83,7 +84,7 @@ def test_many_same_hash_keys() -> None:
         table[key] = -key
 
     assert len(table) == full_length
-    assert all(
-        table[key] == (-key if i % 2 == 0 else key)
-        for i, key in enumerate(chain)
-    )
+    expected = {key: key for key in chain}
+    expected.update({key: -key for key in chain[::2]})
+    for key, value in expected.items():
+        assert table[key] == value
