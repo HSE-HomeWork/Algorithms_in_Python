@@ -27,6 +27,7 @@ ignore = [
     "CPY001",
     "ANN401",
 ]
+external = ["WPS"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = [
