@@ -10,6 +10,7 @@ MIN_CAPACITY = 16
 WORD_BITS = 64
 MASK_64 = (1 << WORD_BITS) - 1
 FIB_MULTIPLIER = 11400714819323198485  # 2^64 / φ
+WORD_MASK = (1 << WORD_BITS) - 1
 
 
 class KeyInfoError(KeyError):
@@ -152,8 +153,7 @@ class MyDict:
         new_arr: list[Any] = [
             [None] for _ in range(new_capacity)
         ]
-        for idx in range(len(self.arr)):
-            item = self.arr[idx]
+        for item in self.arr:
             if item is not TOMBSTONE and len(item) > 1:
                 self._place(new_arr, item, new_capacity)
         self.arr = new_arr
@@ -171,7 +171,7 @@ class MyDict:
 
     def _second_hash(self, key: int, cap: int) -> int:
         """Реализация хэширования Фибоначи."""
-        mixed = (key * FIB_MULTIPLIER) & MASK_64
+        mixed = (key * FIB_MULTIPLIER) & WORD_MASK
         return mixed >> (WORD_BITS - _find_degree(cap)) | 1
 
 
