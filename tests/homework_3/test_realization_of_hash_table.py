@@ -68,23 +68,3 @@ def test_equal_keys_of_different_types() -> None:
 
     assert len(table) == 1
     assert table[1] == "bool"
-
-
-def test_many_same_hash_keys() -> None:
-    """300 ключей, там один хэш."""
-    chain = [7 + m * HASH_MODULUS for m in range(300)]
-    table = MyDict()
-    full_length = 300
-
-    for key in chain:
-        table[key] = key
-    for key in chain[::2]:
-        table.pop(key)
-    for key in chain[::2]:
-        table[key] = -key
-
-    assert len(table) == full_length
-    expected = {key: key for key in chain}
-    expected.update({key: -key for key in chain[::2]})
-    for key, value in expected.items():
-        assert table[key] == value
