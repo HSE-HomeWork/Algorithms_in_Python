@@ -39,13 +39,13 @@ def test_traversals(method: str, expected: list[int]) -> None:
 
 @given(values_lists)
 def test_in_order_is_sorted(values: list[int]) -> None:
-    """Inorder любого дерева из insert совпадает с sorted()."""
+    """Inorder любого дерева из insert совпадает."""
     assert build_tree(values).in_order() == sorted(values)
 
 
 @given(values_lists)
 def test_tree_from_insert_is_valid(values: list[int]) -> None:
-    """Дерево из insert (в том числе пустое) всегда проходит проверку."""
+    """Дерево из insert всегда проходит проверку."""
     assert checking_correct_bst(build_tree(values).root) is True
 
 
