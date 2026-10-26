@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Iterator
 
+type TraversalAction = Callable[[], Iterable[int]]
+
 
 class TreeNode:
     """Узел дерева."""
@@ -35,19 +37,10 @@ class BinarySearchTree:
         if self.root is None:
             self.root = TreeNode(val=new_val)
             return
-        curr = self.root
+        curr: TreeNode | None = self.root
 
-        while curr:
-            if curr.val > new_val:
-                if curr.left is None:
-                    curr.left = TreeNode(val=new_val)
-                    break
-                curr = curr.left
-            elif curr.right is None:
-                curr.right = TreeNode(val=new_val)
-                break
-            else:
-                curr = curr.right
+        while curr is not None:
+            curr = _descend(curr, new_val)
 
     def pre_order(self) -> list[int]:
         """Вывод в порядке NLR."""
@@ -83,10 +76,27 @@ class BinarySearchTree:
         """
         if node is None:
             return
-        our_way: dict[str, Callable[[], Iterable[int]]] = {
+        our_way: dict[str, TraversalAction] = {
             "N": lambda: (node.val,),
             "L": lambda: self._travel_tree(node.left, order),
             "R": lambda: self._travel_tree(node.right, order),
         }
         for task in order:
             yield from our_way[task]()
+
+
+def _descend(curr: TreeNode, new_val: int) -> TreeNode | None:
+    """Один шаг вставки.
+
+    Вешает новый узел на свободное место и возвращает None,
+    либо возвращает ребёнка, в которого нужно спуститься.
+    """
+    if new_val < curr.val:
+        if curr.left is None:
+            curr.left = TreeNode(val=new_val)
+            return None
+        return curr.left
+    if curr.right is None:
+        curr.right = TreeNode(val=new_val)
+        return None
+    return curr.right
