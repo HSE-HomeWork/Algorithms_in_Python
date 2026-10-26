@@ -49,24 +49,6 @@ class BinarySearchTree:
             else:
                 curr = curr.right
 
-    def _travel_tree(
-        self, node: TreeNode | None, order: str
-    ) -> Iterator[int]:
-        """Конструктор обхода дерева.
-
-        Order тут - это перестановка букв N, L, R ,
-        которая рекурсивно применяется к каждому узлу.
-        """
-        if node is None:
-            return
-        our_way: dict[str, Callable[[], Iterable[int]]] = {
-            "N": lambda: (node.val,),
-            "L": lambda: self._travel_tree(node.left, order),
-            "R": lambda: self._travel_tree(node.right, order),
-        }
-        for task in order:
-            yield from our_way[task]()
-
     def pre_order(self) -> list[int]:
         """Вывод в порядке NLR."""
         return list(self._travel_tree(self.root, "NLR"))
@@ -90,3 +72,21 @@ class BinarySearchTree:
     def reverse_post_order(self) -> list[int]:
         """Вывод в порядке RLN."""
         return list(self._travel_tree(self.root, "RLN"))
+
+    def _travel_tree(
+        self, node: TreeNode | None, order: str
+    ) -> Iterator[int]:
+        """Конструктор обхода дерева.
+
+        Order тут - это перестановка букв N, L, R ,
+        которая рекурсивно применяется к каждому узлу.
+        """
+        if node is None:
+            return
+        our_way: dict[str, Callable[[], Iterable[int]]] = {
+            "N": lambda: (node.val,),
+            "L": lambda: self._travel_tree(node.left, order),
+            "R": lambda: self._travel_tree(node.right, order),
+        }
+        for task in order:
+            yield from our_way[task]()
