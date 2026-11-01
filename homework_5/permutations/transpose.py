@@ -1,5 +1,7 @@
 """Алгоритм перестановок."""
 
+from homework_5.tracer import trace
+
 
 def generate_permutations(array: list[int]) -> list[list[int]]:
     """Основная функция генерации перестановок."""
@@ -17,6 +19,7 @@ def generate_permutations(array: list[int]) -> list[list[int]]:
     return permutate(old_dict, [], length)
 
 
+@trace
 def permutate(
     new_dict: dict[int, int], row: list[int], length: int
 ) -> list[list[int]]:
