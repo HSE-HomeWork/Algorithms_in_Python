@@ -34,6 +34,7 @@ external = ["WPS"]
     "S101",
     "INP001",
 ]
+"homework_5/tracer/*.py" = ["T201"]
 
 [tool.pytest]
 testpaths = ["tests"]
