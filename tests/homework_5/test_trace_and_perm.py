@@ -1,14 +1,17 @@
 """Тесты для Tracer и Permutations."""
 
 import itertools
-from collections.abc import Callable
 
 import pytest
 
-from homework_5.permutations import generate_permutations
-from homework_5.tracer import trace
+from homework_5.permutations.transpose import (
+    generate_permutations,
+)
+from homework_5.tracer.tracer import trace
 
 LEVEL = "Текущий уровень рекурсии: "
+FACT_LEVELS = (0, 1, 2)
+FIB_LEVELS = (0, 1, 2, 3, 3, 2, 1, 2, 2)
 
 
 @trace
@@ -18,139 +21,147 @@ def fact(n: int) -> int:
 
 
 @trace
-def _fib(n: int) -> int:
-    return n if n <= 1 else _fib(n - 1) + _fib(n - 2)
+def fib(n: int) -> int:
+    """Число Фибоначчи."""
+    if n <= 1:
+        return n
+    return fib(n - 1) + fib(n - 2)
 
 
 @trace
-def _inner() -> int:
+def inner() -> int:
+    """Вызывается из outer."""
     return 1
 
 
 @trace
-def _outer() -> int:
-    return _inner() + 1
+def outer() -> int:
+    """Вызывает inner."""
+    return inner() + 1
 
 
 @trace
-def _boom(n: int) -> int:
-    return _boom(n - 1) if n else 1 // n
+def boom(n: int) -> int:
+    """Падает на дне рекурсии."""
+    return boom(n - 1) if n else 1 // n
 
 
-def run(
-    call: Callable[[], object],
-    capsys: pytest.CaptureFixture[str],
-) -> tuple[object, str, list[int]]:
-    """Вызывает функцию, отдаёт результат, вывод и уровни."""
-    capsys.readouterr()
-    result = call()
-    out = capsys.readouterr().out
-    levels = [
-        int(line.split(LEVEL)[1])
-        for line in out.splitlines()
-        if LEVEL in line
-    ]
-    assert [
-        line.index(LEVEL)
-        for line in out.splitlines()
-        if LEVEL in line
-    ] == [x + 1 for x in levels]
-    return result, out, levels
+def levels(out: str) -> tuple[list[int], list[int]]:
+    """Уровни по числу в строке и по длине отступа."""
+    lines = [line for line in out.splitlines() if LEVEL in line]
+    by_number = [int(line.split(LEVEL)[1]) for line in lines]
+    by_indent = [line.index(LEVEL) - 1 for line in lines]
+    return by_number, by_indent
 
 
-@pytest.mark.parametrize(
-    ("call", "result", "levels"),
-    [
-        (lambda: fact(3), 6, [0, 1, 2]),
-        (lambda: fact(n=1), 1, [0]),
-        (lambda: _fib(4), 3, [0, 1, 2, 3, 3, 2, 1, 2, 2]),
-        (_outer, 2, [0, 0]),
-    ],
-)
-def test_trace(
-    call: Callable[[], object],
-    result: object,
-    levels: list[int],
-    capsys: pytest.CaptureFixture[str],
-) -> None:
-    """Результат - тот же вывод."""
-    got, out, got_levels = run(call, capsys)
-    assert (got, got_levels) == (result, levels)
-    assert out.count("Вход в ") == levels.count(0)
-    assert out.count("Возврат из ") == len(levels)
-    assert run(call, capsys)[1] == out
+class TestTraceAndPermutations:
+    """Трейсер и перестановки."""
 
-
-def test_trace_exception(
-    capsys: pytest.CaptureFixture[str],
-) -> None:
-    """Исключение пробрасывается,счётчик снова в нуле."""
-    outs = []
-    for _ in range(2):
-        with pytest.raises(ZeroDivisionError):
-            run(lambda: _boom(2), capsys)
-        outs.append(capsys.readouterr().out)
-    assert outs[0] == outs[1]
-
-
-def test_trace_metadata() -> None:
-    """functools.wraps сохраняет имя и докстринг."""
-    assert (fact.__name__, fact.__doc__) == (
-        "fact",
-        "Факториал.",
+    @pytest.mark.parametrize(
+        ("func", "arg", "expected", "expected_levels"),
+        [
+            (fact, 3, 6, FACT_LEVELS),
+            (fib, 4, 3, FIB_LEVELS),
+        ],
     )
+    def test_trace(
+        self,
+        func: object,
+        arg: int,
+        expected: int,
+        expected_levels: tuple[int, ...],
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """Результат, уровни, отступы, один вход, возврат."""
+        assert callable(func)
+        assert func(n=arg) == expected
+        out = capsys.readouterr().out
+        assert levels(out) == (
+            list(expected_levels),
+            list(expected_levels),
+        )
+        assert out.count("Вход в ") == 1
+        assert out.count("Возврат из ") == len(expected_levels)
 
+    def test_trace_repeat_and_nested(
+        self,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """Повторный вызов даёт тот же вывод."""
+        outer()
+        first = capsys.readouterr().out
+        outer()
+        assert capsys.readouterr().out == first
+        assert levels(first)[0] == [0, 0]
 
-@pytest.mark.parametrize(
-    ("nums", "expected"),
-    [
-        (
-            [1, 2, 3],
-            [
+    def test_trace_exception(
+        self, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """Исключение пробрасывается."""
+        outs = []
+        for _ in range(2):
+            with pytest.raises(ZeroDivisionError):
+                boom(2)
+            outs.append(capsys.readouterr().out)
+        assert outs[0] == outs[1]
+        assert outs[0].count("Ошибка в ") == outs[0].count(LEVEL)
+
+    def test_trace_metadata(self) -> None:
+        """Имя и докстринг сохраняются."""
+        assert (fact.__name__, fact.__doc__) == (
+            "fact",
+            "Факториал.",
+        )
+
+    @pytest.mark.parametrize(
+        ("nums", "expected"),
+        [
+            (
                 [1, 2, 3],
-                [1, 3, 2],
-                [2, 1, 3],
-                [2, 3, 1],
-                [3, 1, 2],
-                [3, 2, 1],
-            ],
-        ),
-        ([0, 1], [[0, 1], [1, 0]]),
-        ([1], [[1]]),
-    ],
-)
-def test_permutations_examples(
-    nums: list[int], expected: list[list[int]]
-) -> None:
-    """Примеры из условия, включая порядок."""
-    assert generate_permutations(nums) == expected
-
-
-CASES = [
-    list(c)
-    for k in range(5)
-    for c in itertools.product((-1, 0, 1), repeat=k)
-]
-CASES.append(list(range(6)))
-
-
-@pytest.mark.parametrize("nums", CASES)
-def test_permutations(
-    nums: list[int], capsys: pytest.CaptureFixture[str]
-) -> None:
-    """Вход не тронут, общих ссылок нет, рекурсия видна."""
-    before = nums.copy()
-    result, out, levels = run(
-        lambda: generate_permutations(nums), capsys
+                [
+                    [1, 2, 3],
+                    [1, 3, 2],
+                    [2, 1, 3],
+                    [2, 3, 1],
+                    [3, 1, 2],
+                    [3, 2, 1],
+                ],
+            ),
+            ([0, 1], [[0, 1], [1, 0]]),
+            ([1], [[1]]),
+        ],
     )
-    assert isinstance(result, list)
-    assert sorted(result) == sorted(
-        map(list, set(itertools.permutations(nums)))
-    )
-    assert nums == before
-    assert (
-        len({id(p) for p in result} | {id(nums)})
-        == len(result) + 1
-    )
-    assert out.count("Вход в permutate") == 1
-    assert levels.count(len(nums)) == len(result)
+    def test_permutations_examples(
+        self,
+        nums: list[int],
+        expected: list[list[int]],
+    ) -> None:
+        """Примеры из условия, включая порядок."""
+        assert generate_permutations(nums) == expected
+
+    @pytest.mark.parametrize("length", range(6))
+    def test_permutations(self, length: int) -> None:
+        """Массивы из -1, 0, 1: итог как в itertools."""
+        for array in itertools.product(
+            (-1, 0, 1), repeat=length
+        ):
+            nums = list(array)
+            perms = generate_permutations(nums)
+            unique = set(itertools.permutations(nums))
+            assert sorted(perms) == sorted(map(list, unique))
+            assert nums == list(array)
+            ids = {id(perm) for perm in perms}
+            assert len(ids) == len(perms)
+            assert id(nums) not in ids
+
+    @pytest.mark.parametrize("length", range(5))
+    def test_permutations_traced(
+        self,
+        length: int,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """Рекурсия видна в трейсере."""
+        perms = generate_permutations(list(range(length)))
+        out = capsys.readouterr().out
+        assert out.count("Вход в permutate") == 1
+        assert levels(out)[0].count(length) == len(perms)
