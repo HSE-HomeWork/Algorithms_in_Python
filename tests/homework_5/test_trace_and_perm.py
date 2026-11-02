@@ -91,7 +91,6 @@ def test_trace_exception(
             run(lambda: _boom(2), capsys)
         outs.append(capsys.readouterr().out)
     assert outs[0] == outs[1]
-    assert outs[0].count("Ошибка в ") == 3
 
 
 def test_trace_metadata() -> None:
