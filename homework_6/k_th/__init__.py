@@ -1,4 +1,4 @@
-"""Импорт функции k-го по величине."""
+"""Импорт функции нахождения нужного по величине."""
 
 from homework_6.k_th.kth_in_list import find_kth_largest
 
