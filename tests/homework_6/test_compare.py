@@ -17,7 +17,7 @@ def test_degenerate_quick_sort() -> None:
 
 
 def test_equal_elements() -> None:
-    """Проверяет сортировки на массиве из одинаковых элементов."""
+    """Проверяет сортировки на массиве одинаковых элементов."""
     arr = [7] * 30_000
 
     assert merge_sort(arr.copy()) == arr
