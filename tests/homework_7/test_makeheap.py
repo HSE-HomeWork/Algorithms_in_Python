@@ -14,8 +14,9 @@ def check_heap(arr: list[int]) -> None:
     for build in (makeheap_n_log_n, makeheap):
         result = build(arr.copy())
         assert sorted(result) == sorted(arr)
-        for i in range(1, len(result)):
-            assert result[(i - 1) // 2] <= result[i]
+        for i, value in enumerate(result[1:], start=1):
+            parent = (i - 1) // 2
+            assert result[parent] <= value
 
 
 @pytest.mark.parametrize("arr", [[], [7]])
