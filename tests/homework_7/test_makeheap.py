@@ -10,7 +10,7 @@ from homework_7.makeheap import makeheap, makeheap_n_log_n
 
 
 def check_heap(arr: list[int]) -> None:
-    """Проверить обе реализации на одном массиве."""
+    """Проверить реализации на одном массиве."""
     for build in (makeheap_n_log_n, makeheap):
         result = build(arr.copy())
         assert sorted(result) == sorted(arr)
