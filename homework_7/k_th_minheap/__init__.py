@@ -1,4 +1,4 @@
-"""ТУТ ТОЧЧЧНО НЕ ЭКСПОРТ."""
+"""ТОЧЧЧНО  ЭКСПОРТ."""
 
 from homework_7.k_th_minheap.kth_with_heapq import kth_with_heapq
 from homework_7.k_th_minheap.kth_without_heapq import (

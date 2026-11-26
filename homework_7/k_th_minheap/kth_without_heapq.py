@@ -1,4 +1,4 @@
-"""А я самный умный."""
+"""я самный умный."""
 
 from homework_7.makeheap import makeheap, shift_down
 
