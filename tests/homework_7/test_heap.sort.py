@@ -10,7 +10,7 @@ LARGE = 10**100
 
 
 def check_sort(nums: list[int]) -> None:
-    """Сравнить результат со встроенной сортировкой."""
+    """Сравнить результат встроенной сортировкой."""
     data = nums.copy()
     expected = sorted(nums)
     result = heapsort(data)
